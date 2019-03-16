@@ -23,9 +23,16 @@ class String
     String &operator+=(const char *test);
     bool operator==(const char * test);
     bool operator!=(const String &obj);
- 
+    bool operator!=(const char * test);
+    bool operator>(const char * test);
+    bool operator>(const String & obj);
+    bool operator<(const char * test);
+    bool operator<(const String & obj);
  public:
     int size();
+    int find(const char test,int pos );
+    bool empty();
+    int length();
   private:
     char *temp;
     int m_temp;
@@ -194,21 +201,108 @@ bool String::operator==(const char *test)
 }
 bool String::operator!=(const String &obj)
 {
+    int flag = 0;
     int size = obj.m_temp;
-    if (size == m_temp)
+    if(size < m_temp)
     {
         return false;
     }
-    else
+    for (int i = 0; i < size; i++)
     {
-        for (int i = 0; i < size; i++)
+        if(temp[i] != obj.temp[i])
         {
-            if (temp[i] == obj.temp[i])
-            {
-                return false;
-            }
+            flag = 1;
         }
     }
-    return true;
+
+    if(flag == 1)
+        return true;
+    else
+        return false;
+}
+bool String::operator!=(const char *test)
+{
+    int flag = 0;
+    int size = strlen(test);
+    if (size < m_temp)
+    {
+        return false;
+    }
+    for (int i = 0; i < size; i++)
+    {
+        if (temp[i] != test[i])
+        {
+            flag = 1;
+        }
+    }
+    if (flag == 1)
+        return true;
+    else
+        return false;
+}
+bool String::operator>(const char *test)
+{
+   if(strcmp(temp,test) > 0 )
+   {
+       return true;
+   }
+   return false;
+}
+bool String::operator>(const String &obj)
+{
+    if (strcmp(temp, obj.temp) > 0)
+    {
+        return true;
+    }
+    return false;
+}
+bool String::operator<(const char *test)
+{
+    if (strcmp(test,temp) > 0)
+    {
+        return true;
+    }
+    return false;
+}
+bool String::operator<(const String &obj)
+{
+    if (strcmp(obj.temp, temp) > 0)
+    {
+        return true;
+    }
+    return false;
+}
+bool String::empty()
+{
+    if(temp == NULL)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+int String::length()
+{
+    return m_temp;
+}
+int String::find(const char test,int pos)
+{
+  int size_length = m_temp;
+  while(pos != size_length)
+  {
+    if(temp[pos] == test)
+    {
+        return pos;
+    }
+    else if(temp[size_length] == test)
+    {
+        return size_length;
+    }    
+    pos++;
+    size_length--;
+  }
+  return 0;
 }
 #endif //mystring.hpp
