@@ -4,8 +4,8 @@
 using namespace std;
 int main()
 {
-    String s5 = "fsffgg";
-    cout << s5.find('g',0) << endl;
-    
+    String s5 = "ababaaaba";
+ 
+    cout << s5.substr(2,4) << endl;
     return 0;
 }

@@ -31,11 +31,23 @@ class String
  public:
     int size();
     int find(const char test,int pos );
+    int find(const char * test,int pos);
     bool empty();
     int length();
-  private:
+    String& insert(int pos ,  const char * test);
+    String& append(const char * test);
+    String& append(int pos , const char test);
+    String& replace(int begin,int end,const char test);
+    String& erase(int pos ,int len);
+    String& swap(const char * test);
+    String& swap(const String & obj);
+    String& substr(int begin,int end);
+ public:
+    void  get_next(int *nextval);
+ private:
     char *temp;
     int m_temp;
+    int nextval[255];
 };
 
 String::String()
@@ -304,5 +316,176 @@ int String::find(const char test,int pos)
     size_length--;
   }
   return 0;
+}
+int String::find(const char * test,int pos)
+{
+    int i = pos;//i用于主串S当前
+    int j = 1;//j用于子串T
+    int size = strlen(test);
+    get_next(nextval);
+    char p_test[100];
+    sprintf(p_test,"%d",size);
+    strcat(p_test,test);
+    while(i <= m_temp-1 && j <= size)
+    {
+        if(j == 0 || temp[i] == p_test[j])
+        {
+            i++;
+            j++;
+        }
+        else//指针后退重新开始匹配
+        {
+          j = nextval[j]; //j退回合适的位置,i值不变
+        }
+    }
+    if( j >= size)
+        return i-size+1;
+    else
+        return 0;
+}
+//next数组， next[j] = 0 是j =1的情况下，其他情况下为Max,此集和不为空的情况下，其他情况均为1
+void  String::get_next( int * nextval)
+{
+   //我可真是个蠢才
+   //数组带错
+   int i,j;
+   i = 1;
+   j = 0;
+   nextval[1] = 0;
+   char test[100];
+   sprintf(test,"%d",m_temp);
+   strcat(test,temp);
+   while(i < m_temp )
+   {
+       if(j == 0 ||test[i] == test[j])
+       {
+           ++i;
+           ++j;
+           if(test[i] != test[j])//当前字符和前缀字符不相同的时候
+                 nextval[i] = j; // 则当前的j为nextval在i位置上的值
+            else
+                nextval[i] = nextval[j];//如果与前缀字符相同的话
+       }
+       else
+       {
+            j = nextval[j];
+       }
+   }
+}
+String& String::insert(int pos, const char *test)
+{
+   int k = 0,j = 0,i = 0;
+   int size = strlen(test) + pos;
+   char p_test[100];
+   for(i = pos ;i < m_temp;i++)
+   {
+       p_test[k] = temp[i];
+       k++;
+   }
+   i = 0;
+   for(j = pos; j <= size; j++)
+   {
+       temp[j] = test[i];
+       i++;
+   }
+   m_temp += strlen(test);
+   j = 0 ;
+   for(i = size ; i <= m_temp;i++)
+   {
+       temp[i] = p_test[j];
+       j ++;
+   }
+   temp [m_temp] ='\0';
+   return *this;
+}
+String & String::append(const char *test)
+{
+    strcat(temp,test);
+    m_temp += strlen(test);
+    return *this;
+}
+String &String::append(int pos, const char test)
+{
+    char p_test[100];
+    int i = 0;
+    for(i = 0;i < pos ; i++)
+    {
+        p_test[i] = test;
+    }
+    p_test[i] = '\0';
+    strcat(temp, p_test);
+    m_temp += strlen(p_test);
+    return *this;
+}
+String &String::replace(int begin, int end, const char test)
+{
+    if(end >m_temp)
+    {
+        cout << "error is too" << endl;
+    }
+    for(int i = begin-1;i<end;i++)
+    {
+        temp[i] = test;
+    }
+    return *this;
+}
+String &String::erase(int pos, int len)
+{
+    char test[100];
+    int k = 0;
+    for(int i = pos+len ; i<m_temp ; i++)
+    {
+        test[k]= temp[i];
+        k++;
+    }
+    for(int j = 0;j < k ; j++)
+    {
+        temp[j+pos] = test[j];
+    }
+    m_temp = m_temp - len;
+    temp[m_temp] = '\0';
+    return * this;
+}
+String &String::swap(const char *test)
+{
+   char p_test[100];
+   int size = strlen(test);
+   strcpy(p_test,test);
+   p_test[size] = '\0';
+   strcpy(temp,p_test);
+   return * this;
+}
+String & String::swap(const String & obj)
+{
+    char p_test[100],g_test[100];
+    int size = strlen(obj.temp);
+    strcpy(p_test, obj.temp);
+    strcpy(g_test,temp);
+    p_test[size] = '\0';
+    g_test[m_temp] ='\0';
+    strcpy(temp, p_test);
+    strcpy(obj.temp,g_test);
+    return *this;
+}
+String & String::substr(int begin, int end)
+{
+    char test[100];
+    int k = 0,i = 0;
+    if(end > m_temp-1)
+    {
+        cout << "error" << endl;
+    }
+    for(i = 0 ;i < begin;i++)
+    {
+        test[k] = temp[i];
+        k++;
+    }
+    for( i = end + 1; i < m_temp ;i++)
+    {
+        test[k] = temp[i];
+        k++;
+    }
+    strcpy(temp,test);
+    return *this;
 }
 #endif //mystring.hpp
