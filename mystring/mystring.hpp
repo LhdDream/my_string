@@ -4,6 +4,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <string.h>
+#include <iterator>
 using namespace std;
 class String
 {
@@ -22,6 +23,7 @@ class String
     String &operator+=(const String &obj);
     String &operator+=(const char *test);
     bool operator==(const char * test);
+    bool operator==(const String &obj);
     bool operator!=(const String &obj);
     bool operator!=(const char * test);
     bool operator>(const char * test);
@@ -44,11 +46,30 @@ class String
     String& substr(int begin,int end);
  public:
     void  get_next(int *nextval);
+    void  begin();
  private:
     char *temp;
     int m_temp;
     int nextval[255];
+ public:
+
+ class iterator
+    {
+      public:
+        iterator()
+        {
+            test = NULL;
+        }
+        ~iterator()
+        {
+            delete[] test;
+        }
+      private:
+        const char *test;
+    };
 };
+
+
 
 String::String()
 {
@@ -194,6 +215,7 @@ istream &operator>>(istream &in,String &obj)
 }
 bool String::operator==(const char *test)
 {
+    
     int size = strlen(test);
     if(size != m_temp)
     {
@@ -204,6 +226,25 @@ bool String::operator==(const char *test)
         for(int i = 0 ; i <size ; i++)
         {
             if(temp[i] != test[i])
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+bool String::operator==(const String & obj)
+{
+    int size = strlen(obj.temp);
+    if (size != m_temp)
+    {
+        return false;
+    }
+    else
+    {
+        for (int i = 0; i < size; i++)
+        {
+            if (temp[i] != obj.temp[i])
             {
                 return false;
             }
@@ -488,4 +529,5 @@ String & String::substr(int begin, int end)
     strcpy(temp,test);
     return *this;
 }
+
 #endif //mystring.hpp
