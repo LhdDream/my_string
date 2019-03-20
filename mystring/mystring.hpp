@@ -8,65 +8,130 @@
 using namespace std;
 class String
 {
-  friend ostream &operator<<(ostream &out, String &obj);
-  friend istream &operator>>(istream &in,String &obj);
+    friend ostream &operator<<(ostream &out, String &obj);
+    friend istream &operator>>(istream &in, String &obj);
   public:
     String();
     String(const String &obj);
     String(const char *test);
+    String(int n,const char test);
     ~String();
 
+  public:
+    class iterator
+    {
+      friend ostream &operator<<(ostream &out, iterator &obj)
+      {
+          out << obj.test;
+          return out;
+      }
+      public:
+        iterator(const char *p_test = nullptr) : test(p_test)
+        {
+        }
+        ~iterator()
+        {
+        }
+      public:
+        char operator *()
+        {
+            return test[0];
+        }
+        iterator& operator++()
+        {
+            test++;
+            return *this;
+        }
+        iterator operator++(int)
+        {
+           const  char * g_test = test;
+           test++;
+           return iterator(g_test);
+        }
+        iterator& operator--()
+        {
+            test--;
+            return *this;
+        }
+        iterator operator--(int)
+        {
+            const char * g_test = test;
+            test--;
+            return iterator(g_test);
+        }
+        iterator& operator=(const iterator &arg)
+        {
+            test = arg.test;
+            return * this;
+        }
+        bool operator==(const iterator & arg) const
+        {
+            return arg.test == this->test;
+        }
+        bool operator!=(const iterator & arg) const
+        {
+            return arg.test != this->test;
+        }
+        const char * operator->() const
+        {
+            return test;
+        }  
+      private:
+        const char *test;
+    };
+  public:
+    String(iterator begin, iterator end);
   public:
     String &operator=(const String &p_obj);
     String &operator=(const char *p_test);
     char &operator[](int size); //返回一个引用,char类型
     String &operator+=(const String &obj);
     String &operator+=(const char *test);
-    bool operator==(const char * test);
-    bool operator==(const String &obj);
-    bool operator!=(const String &obj);
-    bool operator!=(const char * test);
-    bool operator>(const char * test);
-    bool operator>(const String & obj);
-    bool operator<(const char * test);
-    bool operator<(const String & obj);
+    bool operator==(const char * test) ;
+    bool operator==(const String &obj) ;
+    bool operator!=(const String &obj) ;
+    bool operator!=(const char * test) ;
+    bool operator>(const char * test) ;
+    bool operator>(const String & obj) ;
+    bool operator<(const char * test) ;
+    bool operator<(const String & obj) ;
  public:
     int size();
-    int find(const char test,int pos );
-    int find(const char * test,int pos);
+    int find(const char test,int pos ) const ;
+    int find(const char * test,int pos) ;
+    int find(const String &s,int pos ) ;
     bool empty();
     int length();
     String& insert(int pos ,  const char * test);
     String& append(const char * test);
     String& append(int pos , const char test);
+    String& append(const String &s);
+    String& append(const String &s,int pos,int n);
     String& replace(int begin,int end,const char test);
     String& erase(int pos ,int len);
     String& swap(const char * test);
     String& swap(const String & obj);
     String& substr(int begin,int end);
+    const char * c_str() const;
+    char& at(int n);
+    int compare(const String &s) const;
+    int compare(const char *s) const;
+    int copy(char *s,int n,int pos = 0) const;
  public:
-    void  get_next(int *nextval);
-    void  begin();
+    void  get_next(int *nextval) ;
+    iterator begin() const
+    {
+        return iterator(temp);
+    }
+    iterator end() const
+    {
+        return iterator(temp+m_temp);
+    }
  private:
     char *temp;
     int m_temp;
     int nextval[255];
- public:
-
- class iterator
-    {
-      public:
-        iterator()
-        {
-            test = NULL;
-        }
-        ~iterator()
-        {
-            delete[] test;
-        }
-      private:
-        const char *test;
-    };
+ 
 };
 
 
@@ -110,6 +175,25 @@ String::String(const String &obj)
     m_temp = obj.m_temp;
     temp = new char [m_temp + 1];
     strcpy(temp,obj.temp);
+}
+String::String(int n, const char test)
+{
+   m_temp = n;
+   temp = new char [m_temp];
+   for(int i = 0 ;i < n ;i ++)
+   {
+       temp[i] = test;
+   }
+}
+String::String(iterator begin, iterator end)
+{
+    int g = 0;
+    temp  = new char [100];
+    for(String::iterator i = begin; i != end;i++)
+    {
+        temp[g] = *i;
+        g++;
+    }
 }
 String::~String()
 {
@@ -162,6 +246,14 @@ char& String::operator[](int size)
         cout << " 数组越界" << endl;
     }
     return temp[size];
+}
+char &String::at(int n)
+{
+    if(n < 0 || n>m_temp)
+    {
+        throw 0;
+    }
+    return temp[n];
 }
 String & String::operator+=(const char *test)
 {
@@ -340,7 +432,7 @@ int String::length()
 {
     return m_temp;
 }
-int String::find(const char test,int pos)
+int String::find(const char test,int pos) const
 {
   int size_length = m_temp;
   while(pos != size_length)
@@ -358,7 +450,7 @@ int String::find(const char test,int pos)
   }
   return 0;
 }
-int String::find(const char * test,int pos)
+int String::find(const char * test,int pos) 
 {
     int i = pos;//i用于主串S当前
     int j = 1;//j用于子串T
@@ -384,6 +476,32 @@ int String::find(const char * test,int pos)
     else
         return 0;
 }
+int String::find(const String &s, int pos)
+{
+    int i = pos; //i用于主串S当前
+    int j = 1;   //j用于子串T
+    int size = strlen(s.temp);
+    get_next(nextval);
+    char p_test[100];
+    sprintf(p_test, "%d", size);
+    strcat(p_test,s.temp);
+    while (i <= m_temp - 1 && j <= size)
+    {
+        if (j == 0 || temp[i] == p_test[j])
+        {
+            i++;
+            j++;
+        }
+        else //指针后退重新开始匹配
+        {
+            j = nextval[j]; //j退回合适的位置,i值不变
+        }
+    }
+    if (j >= size)
+        return i - size + 1;
+    else
+        return 0;
+} 
 //next数组， next[j] = 0 是j =1的情况下，其他情况下为Max,此集和不为空的情况下，其他情况均为1
 void  String::get_next( int * nextval)
 {
@@ -529,5 +647,48 @@ String & String::substr(int begin, int end)
     strcpy(temp,test);
     return *this;
 }
-
+const char * String::c_str()  const 
+{
+    return temp;
+}
+String &String::append(const String &s)
+{
+    strcat(temp, s.temp);
+    m_temp += strlen(s.temp);
+    return *this;
+}
+String &String::append(const String &s, int pos, int n)
+{
+    char test[100];
+    int k = 0;
+    for(int i = pos ;i < n ;i++)
+    {
+        test[k] = s.temp[i];
+        k++;
+    }
+    strcat(temp,test);
+    m_temp += strlen(test);
+    return * this;
+}
+int String::compare(const String &s) const
+{
+    return temp == s.temp;
+}
+int String::compare(const char *s) const
+{
+    return temp == s;
+}
+int String::copy(char *s, int n, int pos ) const
+{
+    if(n < strlen(s))
+    {
+        throw 0;
+    }
+    int k = 0;
+    for(int i = pos ; i < pos+n ;i++)
+    {
+        s[k] = temp[i];
+        k++;
+    }
+}
 #endif //mystring.hpp
