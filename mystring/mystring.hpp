@@ -26,12 +26,8 @@ class String
           return out;
       }
       public:
-        iterator(const char *p_test = nullptr) : test(p_test)
-        {
-        }
-        ~iterator()
-        {
-        }
+        iterator(const char *p_test = nullptr) : test(p_test){}
+        ~iterator(){}
       public:
         char operator *()
         {
@@ -138,7 +134,6 @@ class String
 
 String::String()
 {
-    // cout << "fffffffffffff" << endl;
     m_temp = 0;
     temp = new char [m_temp+1];//一个字节
     strcpy(temp,"");
@@ -146,7 +141,6 @@ String::String()
 String::String(const char * test)
 {
     // 考虑空串情况
-    // cout << "ffffffffff" << endl;
     if(test == NULL)
     {
         m_temp = 0;
@@ -197,7 +191,6 @@ String::String(iterator begin, iterator end)
 }
 String::~String()
 {
-    // cout << "fffffffffffff" << endl;
     if(temp != NULL)
     {
         delete []temp;
@@ -297,7 +290,7 @@ int String::size()
 //重载在标准输出之中
 ostream &operator<<(ostream &out, String &obj)
 {
-    out <<obj.temp;
+    out << obj.temp;
     return out;
 }
 istream &operator>>(istream &in,String &obj)
@@ -307,7 +300,6 @@ istream &operator>>(istream &in,String &obj)
 }
 bool String::operator==(const char *test)
 {
-    
     int size = strlen(test);
     if(size != m_temp)
     {
@@ -346,7 +338,6 @@ bool String::operator==(const String & obj)
 }
 bool String::operator!=(const String &obj)
 {
-    int flag = 0;
     int size = obj.m_temp;
     if(size < m_temp)
     {
@@ -356,18 +347,13 @@ bool String::operator!=(const String &obj)
     {
         if(temp[i] != obj.temp[i])
         {
-            flag = 1;
+            return true;
         }
     }
-
-    if(flag == 1)
-        return true;
-    else
-        return false;
+    return false;
 }
 bool String::operator!=(const char *test)
 {
-    int flag = 0;
     int size = strlen(test);
     if (size < m_temp)
     {
@@ -377,13 +363,10 @@ bool String::operator!=(const char *test)
     {
         if (temp[i] != test[i])
         {
-            flag = 1;
+            return true;
         }
     }
-    if (flag == 1)
-        return true;
-    else
-        return false;
+    return false;
 }
 bool String::operator>(const char *test)
 {
@@ -505,13 +488,11 @@ int String::find(const String &s, int pos)
 //next数组， next[j] = 0 是j =1的情况下，其他情况下为Max,此集和不为空的情况下，其他情况均为1
 void  String::get_next( int * nextval)
 {
-   //我可真是个蠢才
-   //数组带错
+   char test[100];
    int i,j;
    i = 1;
    j = 0;
    nextval[1] = 0;
-   char test[100];
    sprintf(test,"%d",m_temp);
    strcat(test,temp);
    while(i < m_temp )
@@ -533,9 +514,9 @@ void  String::get_next( int * nextval)
 }
 String& String::insert(int pos, const char *test)
 {
-   int k = 0,j = 0,i = 0;
-   int size = strlen(test) + pos;
    char p_test[100];
+   int k = 0,j = 0,i = 0;
+   int size = strlen(test) + pos;  
    for(i = pos ;i < m_temp;i++)
    {
        p_test[k] = temp[i];
@@ -582,7 +563,7 @@ String &String::replace(int begin, int end, const char test)
     {
         cout << "error is too" << endl;
     }
-    for(int i = begin-1;i<end;i++)
+    for(int i = begin - 1;i<end;i++)
     {
         temp[i] = test;
     }
@@ -690,5 +671,6 @@ int String::copy(char *s, int n, int pos ) const
         s[k] = temp[i];
         k++;
     }
+    return k;
 }
 #endif //mystring.hpp
